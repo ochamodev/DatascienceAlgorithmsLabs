@@ -10,7 +10,7 @@ tabBisectionTitle = "Método de la bisección"
 bisectionEquationId = "bisectionEquation"
 bisectionEquationLabel = "Ingrese la ecuación"
 
-bisectionIntervalId = "bisectioninterval"
+bisectionIntervalId = "bisectionInterval"
 bisectionIntervalLabel = "Intervalo [a,b]. Escribir como a,b sin los corchetes"
 
 bisectionKMaxId = "bisectionKmax"
@@ -35,6 +35,9 @@ newtonMethodInitialSolLabel = "Solución inicial $$x_0$$"
 
 newtonMethodMaxIterationId = "newtonMethodMaxIter"
 newtonMethodMaxIterationLabel = "Máximo de iteraciones $$k_{max}$$"
+
+newtonMethodTolId = "newtonTolerance"
+newtonMethodTolLabel = "Tolerancia"
 
 newtonMethodSolveButtonId = "newtonMethodResolve"
 newtonMethodSolveButtonLabel = "Resolver por Netwon-Raphson"
@@ -69,9 +72,10 @@ dashboardPage(
                     textInput(newtonMethodFunctionId, newtonMethodFunctionLabel),
                     textInput(newtonMethodInitialSolId, withMathJax(newtonMethodInitialSolLabel)),
                     textInput(newtonMethodMaxIterationId, withMathJax(newtonMethodMaxIterationLabel)),
+                    textInput(newtonMethodTolId, newtonMethodTolLabel),
                     actionButton(newtonMethodSolveButtonId, newtonMethodSolveButtonLabel)
                     ),
-                    textOutput("difFinitOut"))
+                    tableOutput("salidaNewton"))
         )
     )
 )

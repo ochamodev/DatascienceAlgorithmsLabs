@@ -10,34 +10,42 @@ source_python("algoritmos.py")
 shinyServer(function(input, output) {
     
     #Evento y evaluación de metodo de newton para ceros
-    newtonCalculate<-eventReactive(input$nwtSolver, {
-        inputEcStr<-input$equationBisection[1]
-        print(inputEcStr)
-        initVal<-input$initVal[1]
-        error<-input$Error[1]
-        #outs<-add(initVal, error)
-        outs<-newtonSolverX(initVal, inputEcStr, error)
+    bisectionCalculate<-eventReactive(input$bisectionResolve, {
+        eq<-input$bisectionEquation[1]
+        print(eq)
+        initInterval<-input$bisectionInterval[1]
+        print(initInterval)
+        bisectionKmax <- input$bisectionKmax[1]
+        print(bisectionKmax)
+        error<-input$bisectionTolerance[1]
+        print(error)
+        outs<-bisectionMethod(eq, initInterval, error, bisectionKmax)
         outs
     })
     
     #Evento y evaluación de diferencias finitas
-    diferFinitCalculate<-eventReactive(input$diferFinEval, {
-        inputEcStr<-input$difFinEcu[1]
-        valX<-input$valorX[1]
-        h<-input$valorH[1]
-        outs<-evaluate_derivate_fx(inputEcStr, valX, h)
-        as.character(outs)
+    newtonCalculate<-eventReactive(input$newtonMethodResolve, {
+      eq<-input$newtonFunction[1]
+      print(eq)
+      initSol<-input$newtonInitialSol[1]
+      print(initSol)
+      newtonKmax <- input$newtonMethodMaxIter[1]
+      print(newtonKmax)
+      error<-input$newtonTolerance[1]
+      print(error)
+      outs<-newtonRaphsonMethod(eq, initSol, error, newtonKmax)
+      outs
     })
     
     
     #REnder metodo de Newton
     output$salidaTabla<-renderTable({
-        newtonCalculate()
+      bisectionCalculate()
     })
     
     #Render Diferncias Finitas
-    output$difFinitOut<-renderText({
-        diferFinitCalculate()
+    output$salidaNewton<-renderTable({
+      newtonCalculate()
     })
     
     
