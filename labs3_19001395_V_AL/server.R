@@ -10,13 +10,8 @@ source_python("algoritmos.py")
 shinyServer(function(input, output) {
     
     #Evento y evaluación de metodo de newton para ceros
-    newtonCalculate<-eventReactive(input$nwtSolver, {
-        inputEcStr<-input$ecuacion[1]
-        print(inputEcStr)
-        initVal<-input$initVal[1]
-        error<-input$Error[1]
-        #outs<-add(initVal, error)
-        outs<-newtonSolverX(initVal, inputEcStr, error)
+    closedSolutionCalculate<-eventReactive(input$resolveClosedSolution, {
+        outs<-calculate_closed_solution()
         outs
     })
     
@@ -31,8 +26,8 @@ shinyServer(function(input, output) {
     
     
     #REnder metodo de Newton
-    output$salidaTabla<-renderTable({
-        newtonCalculate()
+    output$closedSolutionOut<-renderTable({
+        closedSolutionCalculate()
     })
     
     #Render Diferncias Finitas

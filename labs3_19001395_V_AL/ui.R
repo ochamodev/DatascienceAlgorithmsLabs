@@ -4,8 +4,9 @@ library(shinydashboard)
 # Problem 1
 closedSolutionMenuTitle <- "P1 Solución cerrada"
 closedSolutionMenuId <- "closed_solution"
-closedSolutionResolveBtn <- "Solve closed solution"
-closedSolutionResolveBtn <- "closedSolutionResolve"
+closedSolutionResolveBtnId <- "resolveClosedSolution"
+closedSolutionResolveBtnTitle <- "Solve"
+closedSolutionOutput <- "closedSolutionOut"
 # Problem 1
 
 # Define UI for application that draws a histogram
@@ -19,13 +20,11 @@ dashboardPage(
     ),
     dashboardBody(
         tabItems(
-            tabItem(closedSolutionMenuTitle,
+            tabItem(closedSolutionMenuId,
                     h1(closedSolutionMenuTitle),
-                    box(textInput("ecuacion", "Ingrese la Ecuación"),
-                        textInput("initVal", "X0"),
-                        textInput("Error", "Error")),
-                    actionButton(close, closedSolutionMenuTitle),
-                    tableOutput("salidaTabla")),
+                    
+                    actionButton(closedSolutionResolveBtnId, closedSolutionResolveBtnTitle),
+                    tableOutput(closedSolutionOutput)),
             
             tabItem("Derivacion",
                     h1("Diferencias Finitas"),
