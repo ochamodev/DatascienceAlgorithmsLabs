@@ -87,6 +87,92 @@ def calculate_closed_solution():
 
     return df_x_star
 
+def compute_cost(A, b, x):
+    return np.mean((A.dot(x) - b) ** 2)
+
+def gradient_descent(lr=0.001, num_iter=1000):
+    n, d = A.shape
+    x = np.zeros((d, 1))
+    for i in range(num_iter):
+        gradient = 2 * A.T.dot(A.dot(x) - b) / n
+        x -= lr * gradient
+    
+    f_x_star = compute_cost(A, b, x)
+
+    df_x_star = pd.DataFrame(x, columns=['x'])
+    df_x_star['Valor_de_f(x)'] = f_x_star
+    return df_x_star
+
+def stochastic_gradient_descent(lr=0.001, num_iter=1000):
+    n, d = A.shape
+    x = np.zeros((d, 1))
+    for i in range(num_iter):
+        idx = np.random.randint(n)
+        A_i = A[idx:idx+1]
+        b_i = b[idx:idx+1]
+        gradient = 2 * A_i.T.dot(A_i.dot(x) - b_i)
+        x -= lr * gradient
+
+    f_x_star = compute_cost(A, b, x)
+
+    df_x_star = pd.DataFrame(x, columns=['x'])
+    df_x_star['Valor_de_f(x)'] = f_x_star
+    return df_x_star
+
+def mini_batch_gradient_descent(lr=0.001, batch_size=32, num_iter=1000):
+    n, d = A.shape
+    x = np.zeros((d, 1))
+    for i in range(num_iter):
+        idx = np.random.choice(n, batch_size, replace=False)
+        A_batch = A[idx]
+        b_batch = b[idx]
+        gradient = 2 * A_batch.T.dot(A_batch.dot(x) - b_batch) / batch_size
+        x -= lr * gradient
+        
+    f_x_star = compute_cost(A, b, x)
+
+    df_x_star = pd.DataFrame(x, columns=['x'])
+    df_x_star['Valor_de_f(x)'] = f_x_star
+    return df_x_star
+
+def backtracking_line_search_gd(A, b, x, alpha=0.3, beta=0.8):
+    # Calculate the initial gradient
+    gradient = 2 * A.T.dot(A.dot(x) - b) / A.shape[0]
+    
+    # Initial step size
+    step_size = 1.0
+    
+    # Calculate the initial cost
+    cost = np.mean((A.dot(x) - b) ** 2)
+    
+    while True:
+        # Update x with the current step size
+        x_new = x - step_size * gradient
+        
+        # Calculate the new cost
+        new_cost = np.mean((A.dot(x_new) - b) ** 2)
+        
+        # Check the Armijo condition
+        if new_cost <= cost - alpha * step_size * np.linalg.norm(gradient) ** 2:
+            break
+        
+        # Reduce step size
+        step_size *= beta
+    
+    return step_size
+
+def convert_input_to_numpy(input_text):
+    # Elimina espacios en blanco y separa por comas
+    str_values = input_text.strip().split(',')
+    
+    # Convierte las cadenas en números flotantes
+    float_values = [float(val) for val in str_values]
+    
+    # Convierte la lista a un array NumPy con forma (d, 1)
+    np_array = np.array(float_values).reshape(-1, 1)
+    
+    return np_array
+
 def rosenbrock(x: np.array):
     return 100 * (x[1] - x[0]**2)**2 + (1 - x[0])**2
 
@@ -110,6 +196,28 @@ def backtracking_line_search(x, p, grad, alpha=0.3, beta=0.8):
        t *= beta
     return t
 
+# Método de Gradient Descent con Backtracking Line Search
+def gradient_descent_backtracking(x_init, tol=1e-6, max_iter=1000):
+    x = convert_input_to_numpy(x_init)
+    for i in range(max_iter):
+        grad = rosenbrock_grad(x)  # Calcular el gradiente en el punto actual
+        direction = -grad  # Dirección de descenso (negativo del gradiente)
+        
+        # Aplicar Backtracking Line Search para obtener el mejor tamaño de paso
+        alpha = backtracking_line_search(x, direction, grad)
+        
+        # Actualizar x usando el tamaño de paso obtenido
+        x_new = x + alpha * direction
+        
+        # Verificar la convergencia
+        if np.linalg.norm(x_new - x) < tol:
+            print(f"Convergió después de {i} iteraciones.")
+            break
+        
+        x = x_new
+    
+    return x
+
 def newton_method(x0, tol=1e-8, max_iter=1000):
     x_k = x0
     iter_count = 0
@@ -129,11 +237,11 @@ def newton_method(x0, tol=1e-8, max_iter=1000):
     
     return results
 
-initial_points = [np.array([0.0, 0.0]), np.array([0.6, 0.6]), np.array([-0.5, 1.0]), np.array([-1.2, 1.0])]
+def newton_method_backtrack(x_0: str, step_size: str):
+    x_0 = x_0.split(",")
+    x_0[0], x_0[1] = float(x_0[0]), float(x_0[1])
+    step_size = int(step_size)
 
-# Ejecutar el método de Newton para cada punto inicial
-for x0 in initial_points:
-    print(f"\nResultados para el punto inicial {x0}:")
-    results = newton_method(x0)
-    for r in results:
-        print(f"Iteración {r[0]}: x_k = {r[1]}, p_k = {r[2]}, ||grad|| = {r[3]}")
+    output = newton_method(x_0, step_size)
+
+    return output
